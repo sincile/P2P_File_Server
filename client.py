@@ -16,8 +16,18 @@ def connect(portNumber):
         print 'Error creating connection'
         sys.exit(-1)
 		
+        
+    msg = 'Hello from the client'   
+    msg = msg.encode('utf-8')    
+        
+    try:
+		sock.sendall(msg) #Send message to server
+    except:
+		print 'Error sending hello'
+		sys.exit(-1)
+		
     try:    
-        quote = sock.recv(quoteMax) #Receive quote from server
+        msg = sock.recv(512) #Receive message from server
     except:
         print 'Receive error'
         sys.exit(-1)
@@ -27,7 +37,7 @@ def connect(portNumber):
     except:
         print 'Error closing socket'
         sys.exit(-1)
-    print quote
+    print msg
     return
 
 def main (hostName, portNumber):
@@ -43,7 +53,7 @@ if (len(sys.argv) < 2 or len(sys.argv) > 3): #Make sure format of command line a
     sys.exit()
     
 if (len(sys.argv) == 2):
-    portNumber = 8000
+    portNumber = 8001
     
 else:
     portNumber = sys.argv[2]
