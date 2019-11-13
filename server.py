@@ -7,8 +7,10 @@ host = '127.0.0.1'
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+
 server.bind((host,8080))
 server.listen()
+print("Listening on ", host, ' on port 8080' )
 
 def main():
     while True:
