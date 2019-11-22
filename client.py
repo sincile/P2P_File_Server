@@ -1,6 +1,7 @@
 import sys
 import socket
 import os
+import Library
 
 def PWD():
     print('PWD')
@@ -108,13 +109,13 @@ def connect(IP, portNumber):
         sys.exit(-1)
         
     msg = ('Hello from the client')   
-    msg = msg.encode('utf-8')    
+    Library.write(msg, sock)
     
-    try:
-        sock.sendall(msg) #Send message to server
-    except:
-        print ('Error sending hello')
-        sys.exit(-1)
+    #try:
+    #    sock.sendall(msg) #Send message to server
+    #except:
+    #    print ('Error sending hello')
+    #    sys.exit(-1)
 		
     try:    
         msg = sock.recv(512) #Receive message from server
