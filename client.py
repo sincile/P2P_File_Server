@@ -3,18 +3,28 @@ import socket
 import os
 import Library
 
-def PWD():
-    print('PWD')
+def PWD(sock):
+    Library.write('PWD', sock)
+    currentDir = Library.read(sock)
+    print ('Current server directory: ', currentDir, '\n')
     return
     
-def DIR():
-    print('DIR')
+def DIR(sock):
+    Library.write('DIR', sock)
+    directoryListing = Library.read(sock)
+    print (directoryListing, '\n')
     return
     
-def CD():
-    print('CD')
+def CD(sock):
+    Library.write('CD', sock)
+    newDirectory = input('Please enter directory you would like to change to: ')
+    Library.write(newDirectory, sock)
     return
     
+def Disconnect(sock):
+    Library.write('BYE', sock)
+    return    
+
 def LPWD():
     try:
         currentDir = os.getcwd()
@@ -55,7 +65,7 @@ def Download():
     print('Download')
     return
 
-def menu():
+def menu(sock):
      
     loop = True
      
@@ -72,11 +82,12 @@ def menu():
         selection = input('Please enter the corresponding number of the option you would like to select: ')
     
         if int(selection) == 1:
-            PWD()
+            PWD(sock)
         elif int(selection) == 2:
-            DIR()
+            DIR(sock)
         elif int(selection) == 3:
-            CD()
+            CD(sock)
+            PWD(sock)
         elif int(selection) == 4:
             LPWD()
         elif int(selection) == 5:
@@ -86,6 +97,7 @@ def menu():
         elif int(selection) == 7:
             Download()
         elif int(selection) == 8:
+            Disconnect(sock)
             loop = False
         else:
             print('Invalid selection.')
@@ -110,20 +122,12 @@ def connect(IP, portNumber):
         
     msg = ('Hello from the client')   
     Library.write(msg, sock)
-    
-    #try:
-    #    sock.sendall(msg) #Send message to server
-    #except:
-    #    print ('Error sending hello')
-    #    sys.exit(-1)
 		
-    try:    
-        msg = sock.recv(512) #Receive message from server
-    except:
-        print ('Receive error')
-        sys.exit(-1)
+    msg = Library.read(sock)
+    print (msg)
         
-    menu()
+    menu(sock)
+    
         
     try:    
         close = sock.close() #Close socket
@@ -131,8 +135,6 @@ def connect(IP, portNumber):
         print ('Error closing socket')
         sys.exit(-1)
         
-    msg = msg.decode('utf-8')
-    print (msg)
     return
 
 def main (hostName, portNumber):
