@@ -2,9 +2,49 @@ from _thread import *
 import socket
 import select
 import sys
-# import LibraryTest
+import os
+import Library
 
 host = '127.0.0.1'
+terminating_char = "*?*"
+
+def hello(connect, message="Hello from the server"):
+    Library.write(message, connect)
+
+def pwd(connect):
+    try:
+        path = os.getcwd()
+        Library.write(path, connect)
+        print("Sent:", path)
+    except Exception:
+        Library.write("Error getting current path", connect)
+
+def dir(connect,path=''):
+    try:
+        if(path):
+            path_content = os.listdir(path)
+        else:
+            path_content = os.listdir()
+        Library.write(path_content, connect)
+        print("Sent:", path_content)
+    except Exception:
+        Library.write("Error getting current path", connect)
+
+def cd(connect,path=''):
+    try:
+        if(path):
+            path_content = os.chdir(path)
+        else:
+            path_content = os.chdir('/')
+        Library.write(path_content, connect)
+        print("Sent:", path_content)
+        return path_content
+    except Exception:
+        Library.write("Error getting current path", connect)
+
+def download(connect,path='/',file='*'):
+    Library.write("This don't work yet chief", connect)
+    print("Sent: " + "nothing lmao")
 
 def create_socket(portNumber):
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -22,21 +62,40 @@ def create_socket(portNumber):
 
 
 def client_connection(connect):
-    connect.send(("Hello from the server").encode('utf-8'))
+    hello(connect)
+    currentDir = '/'
     while True:
-        data = connect.recv(1024)
-        server_reply = "Client data: " + data.decode('utf-8')
-        if not data:
-            break
-        print(server_reply.encode('utf-8'))
-        connect.sendall(("Recieved: " + server_reply).encode('utf-8'))
-    connect.send(("Goodbye from the server").encode('utf-8'))
-    connect.close()
+        try:
+            data = Library.read(connect)
+            server_reply = "Got: " + data
+            if data == 'PWD':
+                pwd(connect)
+            if data == 'DIR':
+                dir(connect)
+            if data == 'CD':
+                data = Library.read(connect)
+                currentDir = cd(connect,data)
+            if data == 'DOWNLOAD':
+                download(connect)
+            if data == 'BYE':
+                connect.close()
+                break
+            if not data:
+                connect.close()
+                break
+            print(server_reply)
+            # connect.send(("Server Recieved: " + server_reply + terminating_char).encode('utf-8'))
+        except socket.error:
+            print("Client disconnected")
+            connect.close()
+        except IOError:
+            print("PIPE error")
+            connect.close()
 
 
 def main():
     connection_list = []
-    for port in range(1024,65535):
+    for port in range(8000,8101):
           try:
               connection_list.append(create_socket(port))
           except Exception:
@@ -48,22 +107,13 @@ def main():
 
         #Accept all clients wanting to connect
         for sock in s_read:
-            if(sock in connection_list):
-                sockfd, addr = server_sock.accept()
-                connection_list.append(sockfd)
-                print('Client ', addr ,' connected')
-            else:
-                try:
-                    #_thread stuff goes here
-                    data = sock.recv(1024)
-                    if data:
-                        sock.send(("Recieved: " + data.decode('utf-8')).encode())
-                except:
-                    print("Error recieving from client ", addr)
-                    sock.send("Error recieving from client ", addr)
-                    sock.close()
-                    connection_list.remove(sock)
-                    continue
+            connect, addr = sock.accept()
+            try:
+                #auto handle threads using the client connection
+                start_new_thread(client_connection, (connect,))
+            except Exception:
+                print("Can't create client thread")
+                pass
 
     #Close all the sockets
     for i in connection_list:
@@ -71,9 +121,6 @@ def main():
             connection_list[i].close()
         except Exception:
             pass
-        # connect, addr = sock.accept()
-        # print("Connected with " + addr[0] + ":" + str(addr[1]))
-        # start_new_thread(client_connection, (conn,))
 
 
 if __name__ == '__main__':
