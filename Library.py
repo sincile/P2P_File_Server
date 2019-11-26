@@ -50,38 +50,3 @@ def read(sock):
         if (message [-3:]==terminatingstring):
             break
     return message[:-3]
-
-#******************************************************************************************
-#Function Name: validate
-#Description: Validates input. If input is not from the list of commands, returns an error.
-#Parameters: input - user input
-#Return value: valid - input from user that is from the list of commands
-#******************************************************************************************
-
-def validate(input):
-    input = input.upper()
-    input = input.split(' ', 1)[0] # split command from file and directory or anything else aftter the command name
-    print (input)
-    if input == "PWD":
-        valid = True
-    elif input == "DOWNLOAD":
-        valid = True
-    elif input == "DIR":
-        valid = True
-    elif input == "CD":
-        valid = True
-    elif input == "LPWD":
-        valid = True
-    elif input == "LDIR":
-        valid = True
-    elif input == "LCD":
-        valid = True
-    elif input == "READY":
-        valid = True
-    elif input == "FILE":
-        valid = True
-    elif input == "STOP":
-        valid = True
-    else: 
-        valid = False
-    return valid
