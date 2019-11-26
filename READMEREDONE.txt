@@ -23,7 +23,7 @@ The following is a list of commands, what they do, and additional arguments as t
 
 6 LCD - Outputs local directory. After command, must input directory you wish to change to.
 
-7 DOWNLOAD - Allows you to download a file you want from the server. Must input a filename after. Then respond with "YES" or "NO" if you would like the file to be overwritten or not. If you wish to cancel the download, type "STOP."
+7 DOWNLOAD - Allows you to download a file you want from the server. Must input a filename after. Then respond with "YES" or "NO" if you would like the file to be overwritten or not. If you wish to cancel the download, type "STOP"
 
 8 EXIT - Stops the program.
 
