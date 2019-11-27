@@ -35,19 +35,21 @@ Design overview: The user will start up PuTTY, and login if necessary. Then the 
 
 Type of library used: Shared because it is the default type for Python.
 
-Protocol: Syntax for messages is that user input is automatically made uppercase to correspond to commands in list. Also, port number is optional, but there is a default port number of 8000. The client will know when it has received all the data from the other host by ANSWER. The server will know when it has received all the data from the other host by ANSWER.
+Protocol: Syntax for messages is that user input is automatically made uppercase to correspond to commands in list. Also, port number is optional, but there is a default port number of 8000. The client and server will know when it has received all the data from the other host because of the terminating string at the end of each message which is added to the message in the library's write function before sending to the other host.
+
 
 Known issues: None
 
 DECISIONS
 
-How will the client know it has received the entire directory name? Command separated from directory so it knows where the name of the directory begins.
+How will the client know it has received the entire directory name? The terminating string means the entire message has been received.
 
-How will the server indicate the end of the directory listing? 
+
+How will the server indicate the end of the directory listing? The server will indicate the end of the directory listing with the terminating message.
 
 What will the server response be for successful and unsuccessful cd commands? If successful, ANSWER. If unsuccessful, an error message will be given.
 
-How does the client know when the server has completed sending the file? 
+How does the client know when the server has completed sending the file? The client knows because of the terminating string at the end of a message.
 
-How does the server know when the client has completed sending the file?
+How does the server know when the client has completed sending the file? The server knows because of the terminating string at the end of a message.
 
