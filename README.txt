@@ -27,11 +27,11 @@ The following is a list of commands, what they do, and additional arguments as t
 
 8 EXIT - Sends a message to the server which lets the server know the client is disconnecting, then ends the program.
 
-How to compile: Start up PuTTY and login if necessary. Type "python3 server.py" and then "python3 client.py <IP Address> <Port Number (Optional)>".
+How to compile: Start up PuTTY and login if necessary. Type "python3 server.py" and then "python3 client.py <IP Address> <Port Number (Optional)>". Since Python is an interpreted language you will not need to compile any code
 
 How to run: Start up PuTTY and login if necessary. Type "python3 server.py" and then "python3 client.py <IP Address> <Port Number (Optional)>".
 
-Design overview: The user will start up PuTTY, and login if necessary. Then the user will type "python3 server.py" and then "python3 client.py <IP Address> <Port Number (Optional)>". If the user does not input a port number, the default of 8000 will be used. After that, the user will be given a list of commands. If anything other than a command from the list is input, an error message will be displayed. Likewise, if the number of arguments is not met, an error message will also be displayed. The user can then input commands until they exit the program by pressing "8" and then "Enter".
+Design overview: The user will start up PuTTY, and login if necessary. Then the user will type "python3 server.py" and then "python3 client.py <IP Address> <Port Number (Optional)>". If the user does not input a port number, the default of 8000 will be used. After that, the user will be given a list of commands. If anything other than a command from the list is input, an error message will be displayed. Likewise, if the number of arguments is not met, an error message will also be displayed. The user can then input commands until they exit the program by pressing "8" and then "Enter". All messages/commands follow the given algorithms/syntax provied in the originial program specifications.
 
 Type of library used: Shared because it is the default type for Python.
 
@@ -46,6 +46,12 @@ Use Python, specifically version 3
 Use Shared library because it is the default type for Python.
 
 Use terminating string *?* since it is impossible for a Windows/Linux system to have those characters as a directory listing.
+
+Due to limitations in python's fd memory system, we had to restrict the amount of ports the server's listening on to 100. On average python can hold a little over 1000. Having 100 ports gives us plenty of leeway when dealing multiple clients and connections. By default the active ports are 8000 - 8100
+
+If there are binding issues, the server will skip these ports and print a notification on which ports are not usable. If all ports are not usable, the program will not run the server loop.
+
+We chose `*?*` as the terminating characters since this set of characters are impossible to have in files/directory names in UNIX systems. While this sequence could be possible in a file, our library only looks at the last 3 characters to determine if it's the terminating set. Although it is entirely possible to have false positive with these characters, the chances of them occuring are extremely slim
 
 How will the client know it has received the entire directory name? The terminating string *?* means the entire message has been received.
 
