@@ -4,7 +4,7 @@
 #* Due Date: November 26th, 2019
 #* Python Version: 3.7.3
 #* Course: CSC328-010
-#* Filename: LibraryTest.py
+#* Filename: Library.py
 #* Purpose: Makes a shared library that the client and server can call functions from.
 #* To run and compile: N/A; used when inputting python3 server.py and python3 client.py
 #*******************************************************************************
