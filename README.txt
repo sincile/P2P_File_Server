@@ -2,7 +2,7 @@ Authors: Christian Clark, Dylan Herbst, Brandon Kresge
 Creation Date: 11/10/19
 Due Date: 11/30/19
 Course: CSC328-010
-Filename: READMEREDONE
+Filename: README
 Purpose: Provide the user with information about the client-server program, including instructions on how to use it. Also includes a design overview, reasoning for the type of library used, protocol, and decisions we made about the program.
 
 Description: The file you have downloaded is a concurrent, connection-oriented, client-server program that does not require a username and password. It contains a menu of various commands you can input using the numbers listed. If you input anything else, or input without using the correct parameters, you will be given an error message and sent back to the menu.
