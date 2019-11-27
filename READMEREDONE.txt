@@ -27,5 +27,27 @@ The following is a list of commands, what they do, and additional arguments as t
 
 8 EXIT - Sends a message to the server which lets the server know the client is disconnecting then ends the program.
 
+How to compile: Start up PuTTY and login if necessary. Type "python3 server.py" and then "python3 client.py <IP Address> <Port Number (Optional)>".
 
 How to run: Start up PuTTY and login if necessary. Type "python3 server.py" and then "python3 client.py <IP Address> <Port Number (Optional)>".
+
+Design overview: The user will start up PuTTY, and login if necessary. Then the user will type "python3 server.py" and then "python3 client.py <IP Address> <Port Number (Optional)>". After that, the user will be given a list of commands. If anything other than a command from the list is given, an error message will be displayed. Likewise, if the number of arguments is not met, an error message will also be displayed. The user can then input commands until they exit the program by pressing "8" and then "Enter".
+
+Type of library used: Shared because it is the default type for Python.
+
+Protocol: Syntax for messages is that user input is automatically made uppercase to correspond to commands in list. Also, port number is optional, but there is a default port number. The client will know when it has received all the data from the other host by ANSWER. The server will know when it has received all the data from the other host by ANSWER.
+
+Known issues: None
+
+DECISIONS
+
+How will the client know it has received the entire directory name? Command separated from directory so it knows where the name of the directory begins.
+
+How will the server indicate the end of the directory listing? 
+
+What will the server response be for successful and unsuccessful cd commands? If successful, ANSWER. If unsuccessful, an error message will be given.
+
+How does the client know when the server has completed sending the file? 
+
+How does the server know when the client has completed sending the file?
+
