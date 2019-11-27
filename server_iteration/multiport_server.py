@@ -1,3 +1,21 @@
+#Author: Christian Clark
+#Sub-Authors: Dylan Herbst, Brandon Kresge
+#Major: Computer Science - SD
+#Creation Date: November 18, 2019
+#Due Date: November 30, 2019
+#Course: CSC 328 - 010
+#Professor Name: Dr. Frye
+#Assignment: Download station
+#Filename: multiport_server.py
+#Purpose: Provide a concurent, multiported file server for the client download station
+#NOTE: By default the server binds port 8000 - 8100, it will ignore any ports that are already bound
+#NOTE: It's assumed that you are running the server on the KU Unix box as the default path for each user will be
+#      /export/home/public
+#      If you are not on the linux box, please change the default_path variable to a path to a public folder
+#      on the server. Otherwise you are not getting the full experience
+
+#Command to run: python3 multiport_server.py
+
 from _thread import *
 import socket
 import select
@@ -10,17 +28,64 @@ terminating_char = "*?*"
 # default_path = "/Users/Christian"
 default_path = "/export/home/public"
 
+
 def hello(connect, message="Hello from the server"):
-    Library.write(message, connect)
+    """
+    Description:
+        Prints/sends a hello to the client
+    Parameters:
+        connect - the socket you wish to send the hello to
+        message - (optional) a string to send to the client
+                  (default) Hello from the server
+    Return:
+        (No return value)
+        Message is sent to the client
+    Dependencies:
+        Library.py - The download server library file
+    """
+    Library.write(str(message), connect)
+
 
 def pwd(connect,path=default_path):
+    """
+    Description:
+        Prints/Sends the user's current directory
+    Parameters:
+        connect - the socket you wish to send the dir to
+        path - (optional) The user's current path held in the client thread as currentDir
+               (default) the value of default_path variable
+               (example) /Users/Christian
+    Return:
+        (No return value)
+        Path is sent to the client if successful
+        Error is sent to the client otherwise
+    Dependencies:
+        Library.py - The download server library file
+    """
     try:
         Library.write(path, connect)
         print("Sent:", path)
     except Exception:
         Library.write("Error getting current path", connect)
 
+
 def dir(connect,path=default_path):
+    """
+    Description:
+        Prints/sends content in the user's current working directory
+    Parameters:
+        connect - the socket you wish to send the contents to
+        path - (optional) The user's current path held in the client thread as currentDir
+               (default) the value of default_path variable
+               (example) /Users/Christian
+    Return:
+        (No return value)
+        Path content is sent to the client if successful
+        Error is sent to the client otherwise
+    Dependencies:
+        Library.py - The download server library file
+        os - Python's operating system call library
+    """
     try:
         path_content = os.listdir(str(path))
         Library.write(path_content, connect)
@@ -28,7 +93,27 @@ def dir(connect,path=default_path):
     except Exception:
         Library.write("Error getting current path", connect)
 
+
 def cd(connect,path=default_path):
+    """
+    Description:
+        Changes the user's current working directory on the server
+        NOTE: This temporarily moves the server to that working directory as well, but returns to
+        the default_path location after completion
+    Parameters:
+        connect - the socket you wish to send the contents to
+        path - (optional) The user's current path held in the client thread as currentDir
+               (default) the value of default_path variable
+               (example) /Users/Christian
+    Return:
+        0 (zero) - if the server was able to switch the user to that directory
+        -1 (negative one) if the directory cannot be changed, there's a permissions error or unknown error
+
+        The above return values are sent to the client as well
+    Dependencies:
+        Library.py - The download server library file
+        os - Python's operating system call library
+    """
     try:
         path_content = os.chdir(str(path))
         Library.write('0', connect)
@@ -41,16 +126,70 @@ def cd(connect,path=default_path):
         print("Sent: ", '-1')
         return -1
 
+
 def check_file(path,file):
-    return os.path.isfile(path+'/'+file)
+    """
+    Description:
+        Checks to see if a provided file exists on the server
+    Parameters:
+        path - (optional) The user's current path held in the client thread as currentDir
+               (default) the value of default_path variable
+               (example) /Users/Christian
+        file - (string) file name and extension
+               (example) server.py
+    Return:
+        True - if the file exists on the server
+        False - if the file DNE
+    Dependencies:
+        Library.py - The download server library file
+        os - Python's operating system call library
+    """
+    return os.path.isfile(path+'/'+str(file))
+
 
 def download(connect,path=default_path,file='*'):
-    with open(path+'/'+file, 'r') as file_content:
-        content = file_content.read()
-    Library.write(content, connect)
-    print("Sent: ", content)
+    """
+    Description:
+        Download the requested file
+        NOTE: There are preconditions (sends READY twice) the client must meet before this function activates
+        NOTE: The library write function handles EOF conditions
+    Parameters:
+        connect - the socket you wish to send the contents to
+        path - (optional) The user's current path held in the client thread as currentDir
+               (default) the value of default_path variable
+               (example) /Users/Christian
+        file - (string) file name and extension
+               (example) server.py
+    Return:
+        (No return value)
+        File content is sent to the client if successful
+        Error is sent to the client otherwise
+    Dependencies:
+        os - Python's operating system call library
+
+    """
+    try:
+        with open(path+'/'+file, 'r') as file_content:
+            content = file_content.read()
+        Library.write(content, connect)
+        print("Sent: ", content)
+    except (Exception, FileNotFoundError, PermissionError) as e:
+        print('Unable to proccess file')
+        Library.write('Unable to proccess file', connect)
+
 
 def create_socket(portNumber):
+    """
+    Description:
+        Creates a passive socket on the given port
+        NOTE: each socket has a max listening queue value of 10
+    Parameters:
+        portNumber (int) - the port number you wish to make the
+    Return:
+        server (socket) - a (passive) listening socket on the requested port number
+    Dependencies:
+        socket - Python's socket library
+    """
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR, 1)
     print("Socket made")
@@ -66,6 +205,32 @@ def create_socket(portNumber):
 
 
 def client_connection(connect):
+    """
+    Description:
+        This is the default client loop that proccesses the client's request when the server accepts connection
+        NOTE: The server always sends a hello because it's a nice person
+        NOTE: It's assumed that the connection is called inside a thread
+        NOTE: Every client connecting always starts off in the same path (default_path)
+        NOTE: Each client has their own path specified by the currentDir variable
+    Commands/Messages proccessed:
+        PWD
+        DIR
+        CD
+        DOWNLOAD
+        BYE
+    Parameters:
+        connect - the socket you wish to send the contents to
+    Return:
+        (No return value)
+        Loop ends and connection closes under the following conditions:
+            1. The client sends the BYE message
+            2. The client sends empty input
+            3. There's a socket error such as when the client disconnects without saying goodbye
+            4. There's a pipe error during the connection
+    Dependencies:
+        Library.py - The download server library file
+        socket - Python's socket library
+    """
     hello(connect)
     currentDir = default_path
     while True:
@@ -117,9 +282,13 @@ def client_connection(connect):
             print("PIPE error")
             connect.close()
 
+
 def main():
     connection_list = []
     error_list = []
+
+    #Listen on all ports in the given range
+    #Default listening ports: 8000 - 8100
     for port in range(8000,8101):
           try:
               connection_list.append(create_socket(port))
@@ -128,9 +297,11 @@ def main():
               error_list.append(port)
               pass
 
+    #report any issues making the ports listen
     if error_list:
         print("NOTE that these ports are not bound due to an unknown error: ", error_list)
 
+    #start the loop and wait for any connection
     while True:
         #Monitor all conenction ports for activity
         s_read, s_write, s_error = select.select(connection_list,[],[])
