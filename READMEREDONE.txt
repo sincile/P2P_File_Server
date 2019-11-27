@@ -35,7 +35,7 @@ Design overview: The user will start up PuTTY, and login if necessary. Then the 
 
 Type of library used: Shared because it is the default type for Python.
 
-Protocol: Syntax for messages is that user input is automatically made uppercase to correspond to commands in list. Also, port number is optional, but there is a default port number. The client will know when it has received all the data from the other host by ANSWER. The server will know when it has received all the data from the other host by ANSWER.
+Protocol: Syntax for messages is that user input is automatically made uppercase to correspond to commands in list. Also, port number is optional, but there is a default port number of 8000. The client will know when it has received all the data from the other host by ANSWER. The server will know when it has received all the data from the other host by ANSWER.
 
 Known issues: None
 
