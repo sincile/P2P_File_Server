@@ -3,7 +3,7 @@
 ###### ***Authors:***  Christian Clark, Dylan Herbst, Brandon Kresge
 ###### **Creation Date:** 11/10/19
 ###### **Due Date:** 11/30/19
-**Course**: CSC328-010
+###### **Course**: CSC328-010
 ###### ***Filename***:  README.md
 ###### ***Purpose:***
 Provide the user with information about the client-server program, and instructions on how to use it.
