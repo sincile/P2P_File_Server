@@ -53,6 +53,10 @@ Syntax for messages is that user input is automatically made uppercase to corres
 None
 
 #### DECISIONS
+- ##### Use Shared library because it is the default type for Python.
+
+- ##### Use Python, specifically version 3
+
 - ##### Active port ranges
 Due to limitations in python's fd memory system, we had to restrict the amount of ports the server's listening on to 100. On average python can hold a little over 1000. Having 100 ports gives us plenty of leeway when dealing multiple clients and connections.
 By default the active ports are 8000 - 8100
